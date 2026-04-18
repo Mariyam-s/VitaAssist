@@ -1,0 +1,88 @@
+import pandas as pd
+import numpy as np
+
+np.random.seed(42)
+n = 5000
+
+age = np.random.randint(1, 81, n)
+gender = np.random.choice([0, 1], n)  # 0=Female, 1=Male
+bmi = np.round(np.random.uniform(15, 35, n), 1)
+veg_intake = np.random.randint(0, 8, n)
+fruit_intake = np.random.randint(0, 8, n)
+dairy = np.random.randint(0, 8, n)
+eggs = np.random.randint(0, 8, n)
+fish_meat = np.random.randint(0, 8, n)
+night_blindness = np.random.choice([0, 1], n, p=[0.75, 0.25])
+eye_dryness = np.random.choice([0, 1], n, p=[0.75, 0.25])
+recent_infection = np.random.choice([0, 1], n, p=[0.70, 0.30])
+healthcare_access = np.random.choice([0, 1], n, p=[0.40, 0.60])
+clean_water = np.random.choice([0, 1], n, p=[0.30, 0.70])
+sanitation = np.random.choice([0, 1], n, p=[0.35, 0.65])
+
+
+def compute_risk(i):
+    score = 0
+
+    # Dietary deficiency — low intake = higher risk
+    diet = (veg_intake[i] + fruit_intake[i] + dairy[i] + eggs[i] + fish_meat[i])
+    score += max(0, (17 - diet)) * 2.5  # max 42.5 pts
+
+    # Clinical symptoms
+    score += night_blindness[i] * 20
+    score += eye_dryness[i] * 15
+    score += recent_infection[i] * 10
+
+    # Social determinants
+    score += (1 - healthcare_access[i]) * 5
+    score += (1 - clean_water[i]) * 4
+    score += (1 - sanitation[i]) * 4
+
+    # Age risk (children <5 and adults >60 more vulnerable)
+    if age[i] <= 5 or age[i] >= 60:
+        score += 8
+
+    # Low BMI risk
+    if bmi[i] < 18.5:
+        score += 6
+
+    # Add noise
+    score += np.random.normal(0, 5)
+    return np.clip(score, 0, 100)
+
+
+risk_scores = np.array([compute_risk(i) for i in range(n)])
+
+# Label: 0=No Deficiency, 1=At Risk, 2=Deficient
+def label(score):
+    if score < 35:
+        return 0
+    elif score < 65:
+        return 1
+    else:
+        return 2
+
+
+labels = [label(s) for s in risk_scores]
+
+df = pd.DataFrame({
+    'age': age,
+    'gender': gender,
+    'bmi': bmi,
+    'veg_intake': veg_intake,
+    'fruit_intake': fruit_intake,
+    'dairy': dairy,
+    'eggs': eggs,
+    'fish_meat': fish_meat,
+    'night_blindness': night_blindness,
+    'eye_dryness': eye_dryness,
+    'recent_infection': recent_infection,
+    'healthcare_access': healthcare_access,
+    'clean_water': clean_water,
+    'sanitation': sanitation,
+    'deficiency_level': labels
+})
+
+df.to_csv('vitamin_a_data.csv', index=False)
+print(f"Dataset created: {len(df)} rows")
+print(df['deficiency_level'].value_counts().rename({0: 'No Deficiency', 1: 'At Risk', 2: 'Deficient'}))
+print(df.head())
