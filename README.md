@@ -20,7 +20,7 @@
  **Database:** MySQL (WampServer)
 
 # VitaAssist Dashboard
-web.pdf
+[View VitaAssist Dashboard Screenshots](web.pdf)
 
 # System Architecture
 The system follows a modular architecture:
