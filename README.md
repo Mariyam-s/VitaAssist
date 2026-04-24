@@ -4,8 +4,11 @@
 
 # Key Features
  **Non-Invasive Screening:** Predicts risk using ocular symptoms and demographic data instead of invasive blood tests.
+ 
  **Explainable AI (XAI):** Integrated SHAP reasoning to visualize exactly which clinical symptoms triggered a "High Risk" classification.
+ 
  **Offline Functionality:** Developed as a lightweight Flask-based web application capable of LAN-based deployment for rural areas without internet access.
+ 
  **Secure Data Archiving:** MySQL integration to track child demographics and screening history over time.
 
 # Tech Stack
